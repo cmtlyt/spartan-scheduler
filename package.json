@@ -1,0 +1,47 @@
+{
+  "name": "@cmtlyt/spartan-scheduler",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@cmtlyt/base": "^0.11.1",
+    "@cmtlyt/logger": "^0.2.8",
+    "nuxt": "^3.15.4",
+    "pinia": "^3.0.1",
+    "vue": "latest",
+    "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^4.2.1",
+    "@commitlint/cli": "^19.7.1",
+    "@commitlint/config-conventional": "^19.7.1",
+    "@formkit/auto-animate": "^0.8.2",
+    "@nuxt/icon": "^1.10.3",
+    "@nuxt/image": "^1.9.0",
+    "@nuxtjs/color-mode": "^3.5.2",
+    "@nuxtjs/i18n": "^9.2.0",
+    "@nuxtjs/sitemap": "^7.2.5",
+    "@pinia/nuxt": "^0.10.1",
+    "@primevue/nuxt-module": "^4.2.5",
+    "@unocss/nuxt": "^65.5.0",
+    "@vee-validate/nuxt": "^4.15.0",
+    "@vite-pwa/nuxt": "^0.10.6",
+    "@vueuse/nuxt": "^12.7.0",
+    "bumpp": "^10.0.3",
+    "eslint": "^9.20.1",
+    "eslint-plugin-format": "^1.0.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "magic-regexp": "^0.8.0",
+    "nuxt-csurf": "^1.6.5",
+    "nuxt-security": "^2.1.5",
+    "sass": "^1.85.0"
+  }
+}
