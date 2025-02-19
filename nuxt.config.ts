@@ -1,3 +1,5 @@
+import preset from './themes/preset';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
@@ -9,8 +11,29 @@ export default defineNuxtConfig({
     ],
     lazy: true,
   },
+  primevue: {
+    options: {
+      theme: {
+        preset,
+        options: {
+          darkModeSelector: '.dark-mode',
+        },
+      },
+    },
+  },
+  unocss: {
+    nuxtLayers: true,
+    attributify: {
+      prefix: 'un-',
+    },
+  },
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
+    teleportTag: 'section',
+    rootTag: 'section',
+    rootAttrs: {
+      id: 'root',
+    },
   },
   devtools: {
     enabled: true,

@@ -97,7 +97,5 @@ export const logger: LoggerInstance = createLogger<ExtendsKind, ExtendsOption>({
   },
 });
 
-console.error = logger.error;
-console.warn = logger.warn;
 console.log = logger.info;
 console.info = logger.info;

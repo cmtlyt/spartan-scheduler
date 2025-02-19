@@ -1,7 +1,9 @@
 <script setup lang="ts">
 const route = useRoute();
-logger.appear('.page-enter.0', { test: 'message' });
-logger.event('.page-enter.0', 'click', { test: 'message' });
+
+definePageMeta({
+  layout: false,
+});
 </script>
 
 <template>
