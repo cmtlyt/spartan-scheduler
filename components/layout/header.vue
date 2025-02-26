@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import ColorChange from './cl-header/color-change.vue';
-import MessageIcon from './cl-header/message-icon.vue';
-
 const messageCount = ref(0);
 </script>
 
