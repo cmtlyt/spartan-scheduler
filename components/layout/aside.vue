@@ -9,6 +9,11 @@ const items = ref([
     icon: 'mage:dashboard-bar',
     route: '/dashboard',
   },
+  {
+    label: t('aside.rwlb'),
+    icon: 'fluent:task-list-square-ltr-24-regular',
+    route: '/task-list',
+  },
 ]);
 </script>
 

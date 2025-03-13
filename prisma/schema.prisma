@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  userId      String   @unique
+  account     String   @unique
+  name        String?
+  email       String   @unique
+  password    String
+  avatar      String?
+  phone       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deleted     Boolean  @default(false)
+  lastLoginAt DateTime @default(now())
+
+  createTasks       Task[]                @relation("TaskCreator")
+  updateTasks       Task[]                @relation("TaskUpdater")
+  assignTasks       Task[]                @relation("TaskAssignee")
+  participateTasks  TaskParticipantUser[]
+  userProjects      ProjectGroupMember[]
+  createProjects    ProjectGroup[]        @relation("ProjectCreator")
+  updateProjects    ProjectGroup[]        @relation("ProjectUpdater")
+  createRoles       Role[]                @relation("RoleCreator")
+  updateRoles       Role[]                @relation("RoleUpdater")
+  createPermissions Permission[]          @relation("PermissionCreator")
+  updatePermissions Permission[]          @relation("PermissionUpdater")
+
+  @@map("user")
+}
+
+model Task {
+  id         Int      @id @default(autoincrement())
+  taskId     String   @unique
+  name       String
+  content    String
+  status     String
+  priority   String
+  assigneeId String
+  groupId    String   @default("WORLD_GROUP")
+  creatorId  String
+  createdAt  DateTime @default(now())
+  updaterId  String
+  updatedAt  DateTime @updatedAt
+
+  creatorInfo  User                  @relation("TaskCreator", fields: [creatorId], references: [userId])
+  updaterInfo  User                  @relation("TaskUpdater", fields: [updaterId], references: [userId])
+  assigneeInfo User                  @relation("TaskAssignee", fields: [assigneeId], references: [userId])
+  participants TaskParticipantUser[]
+  projectInfo  ProjectGroup          @relation(fields: [groupId], references: [groupId], onDelete: SetDefault)
+
+  @@map("task")
+}
+
+model TaskParticipantUser {
+  userId String
+  taskId String
+
+  userInfo User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  taskInfo Task @relation(fields: [taskId], references: [taskId], onDelete: Cascade)
+
+  @@id([userId, taskId])
+  @@map("task_participant_user")
+}
+
+model ProjectGroup {
+  id          Int      @id @default(autoincrement())
+  groupId     String   @unique
+  name        String
+  description String?
+  creatorId   String
+  createdAt   DateTime @default(now())
+  updaterId   String
+  updatedAt   DateTime @updatedAt
+  deleted     Boolean  @default(false)
+
+  creatorInfo User                 @relation("ProjectCreator", fields: [creatorId], references: [userId])
+  updaterInfo User                 @relation("ProjectUpdater", fields: [updaterId], references: [userId])
+  tasks       Task[]
+  members     ProjectGroupMember[]
+
+  @@map("project_group")
+}
+
+model ProjectGroupMember {
+  userId  String
+  groupId String
+  roleId  String
+
+  userInfo    User                           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  projectInfo ProjectGroup                   @relation(fields: [groupId], references: [groupId], onDelete: Cascade)
+  roleInfo    Role                           @relation(fields: [roleId], references: [roleId])
+  permissions ProjectGroupMemberPermission[]
+
+  @@id([userId, groupId])
+  @@map("project_group_member")
+}
+
+model ProjectGroupMemberPermission {
+  groupId      String
+  userId       String
+  permissionId String
+
+  projectMemberInfo ProjectGroupMember @relation(fields: [userId, groupId], references: [userId, groupId], onDelete: Cascade)
+  permissionInfo    Permission         @relation(fields: [permissionId], references: [permissionId], onDelete: Cascade)
+
+  @@id([userId, groupId])
+  @@map("project_group_member_permission")
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  roleId      String   @unique
+  name        String
+  description String?
+  creatorId   String
+  createdAt   DateTime @default(now())
+  updaterId   String
+  updatedAt   DateTime @updatedAt
+
+  permissions    RolePermission[]
+  projectMembers ProjectGroupMember[]
+  creatorInfo    User                 @relation("RoleCreator", fields: [creatorId], references: [userId])
+  updaterInfo    User                 @relation("RoleUpdater", fields: [updaterId], references: [userId])
+
+  @@map("role")
+}
+
+model Permission {
+  id           Int      @id @default(autoincrement())
+  permissionId String   @unique
+  name         String   @unique
+  description  String?
+  creatorId    String
+  createdAt    DateTime @default(now())
+  updaterId    String
+  updatedAt    DateTime @updatedAt
+
+  projectMemberPermissions ProjectGroupMemberPermission[]
+  rolePermissions          RolePermission[]
+  creatorInfo              User                           @relation("PermissionCreator", fields: [creatorId], references: [userId])
+  updaterInfo              User                           @relation("PermissionUpdater", fields: [updaterId], references: [userId])
+
+  @@map("permission")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  roleInfo       Role       @relation(fields: [roleId], references: [roleId], onDelete: Cascade)
+  permissionInfo Permission @relation(fields: [permissionId], references: [permissionId], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permission")
+}

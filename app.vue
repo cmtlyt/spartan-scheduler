@@ -12,6 +12,7 @@ useHeadSafe({
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  <Toast />
 </template>
 
 <style>
@@ -44,11 +45,33 @@ a {
   text-decoration: none;
 }
 
+p {
+  margin: 0;
+}
+
+img {
+  font-size: 0;
+  vertical-align: middle;
+}
+
 #root {
   display: flex;
   flex-direction: column;
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
+}
+
+.card-shadow {
+  box-shadow: 0 0 10rem -6rem var(--p-primary-color);
+}
+
+.p-inputtext.p-inputtext,
+.p-button.p-button {
+  font-size: 16rem;
+}
+
+.p-select-list-container {
+  max-height: 160rem !important;
 }
 </style>

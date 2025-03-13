@@ -41,6 +41,12 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
+  security: {
+    csrf: {
+      enabled: false,
+      methodsToProtect: ['POST', 'PUT', 'PATCH', 'DELETE'],
+    },
+  },
   modules: [
     '@pinia/nuxt',
     '@vueuse/nuxt',
@@ -50,12 +56,20 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@nuxt/icon',
     '@unocss/nuxt',
-    'nuxt-csurf',
     'nuxt-security',
     '@vee-validate/nuxt',
     '@nuxtjs/sitemap',
     'magic-regexp',
     '@vite-pwa/nuxt',
     '@primevue/nuxt-module',
+    '@prisma/nuxt',
+    // 'nuxt-prisma',
   ],
+  vite: {
+    resolve: {
+      alias: {
+        '.prisma/client/index-browser': './node_modules/.prisma/client/index-browser.js',
+      },
+    },
+  },
 });
