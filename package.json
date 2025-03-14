@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "npm@11.1.0",
   "scripts": {
-    "build": "nuxt build && esno ./scripts/build.ts",
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 nuxt build && esno ./scripts/build.ts",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
@@ -54,6 +54,7 @@
     "@vite-pwa/nuxt": "^0.10.6",
     "@vueuse/nuxt": "^12.8.2",
     "bumpp": "^10.1.0",
+    "cross-env": "^7.0.3",
     "eslint": "^9.22.0",
     "eslint-plugin-format": "^1.0.1",
     "esno": "^4.8.0",
