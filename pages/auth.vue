@@ -20,7 +20,7 @@ const registerSchema = yup.object({
   username: yup.string().required(t('pages.auth.fields.username.errors.required')),
   nickname: yup.string(),
   password: yup.string().required(t('pages.auth.fields.password.errors.required')).matches(/^(?=.*\d)(?=.*[a-z]).{8,20}$/i, t('pages.auth.fields.password.errors.lowLevel')),
-  confirmPassword: yup.string().oneOf([yup.ref('password'), undefined, ''], t('pages.auth.fields.confirmPassword.errors.notMatch')).matches(/^(?=.*\d)(?=.*[a-z]).{8,20}$/i, t('pages.auth.fields.password.errors.lowLevel')),
+  confirmPassword: yup.string().required(t('pages.auth.fields.password.errors.required')).oneOf([yup.ref('password'), ''], t('pages.auth.fields.confirmPassword.errors.notMatch')).matches(/^(?=.*\d)(?=.*[a-z]).{8,20}$/i, t('pages.auth.fields.password.errors.lowLevel')),
   email: yup.string().email(t('pages.auth.fields.email.errors.notEmail')).required(t('pages.auth.fields.email.errors.required')),
 });
 
@@ -100,15 +100,15 @@ onMounted(() => {
         <Form :validation-schema="loginSchema" class="flex flex-col gap-8rem w-full" @submit="onFormSubmit">
           <Field v-slot="{ field }" name="username">
             <FloatLabel variant="on">
+              <InputText v-bind="field" type="text" fluid autocomplete="off" />
               <label>{{ $t('pages.auth.fields.username.label') }}</label>
-              <InputText v-bind="field" type="text" fluid />
             </FloatLabel>
             <ErrorMessage name="username" text="$p-form-field-invalid-placeholder-color" />
           </Field>
           <Field v-slot="{ field }" name="password">
             <FloatLabel variant="on">
+              <Password v-bind="field" toggle-mask fluid :feedback="false" />
               <label>{{ $t('pages.auth.fields.password.label') }}</label>
-              <InputText v-bind="field" type="password" fluid />
             </FloatLabel>
             <ErrorMessage name="password" text="$p-form-field-invalid-placeholder-color" />
           </Field>
@@ -128,35 +128,35 @@ onMounted(() => {
         <Form :validation-schema="registerSchema" class="flex flex-col gap-8rem w-full" @submit="onFormSubmit">
           <Field v-slot="{ field }" name="username">
             <FloatLabel variant="on">
+              <InputText v-bind="field" required type="text" fluid autocomplete="off" />
               <label>{{ $t('pages.auth.fields.username.label') }}</label>
-              <InputText v-bind="field" required type="text" fluid />
             </FloatLabel>
             <ErrorMessage name="username" text="$p-form-field-invalid-placeholder-color" />
           </Field>
           <Field v-slot="{ field }" name="nickname">
             <FloatLabel variant="on">
+              <InputText v-bind="field" required type="text" fluid autocomplete="off" />
               <label>{{ $t('pages.auth.fields.nickname.label') }}</label>
-              <InputText v-bind="field" required type="text" fluid />
             </FloatLabel>
           </Field>
           <Field v-slot="{ field }" name="password">
             <FloatLabel variant="on">
+              <Password v-bind="field" required toggle-mask fluid :feedback="false" />
               <label>{{ $t('pages.auth.fields.password.label') }}</label>
-              <InputText v-bind="field" required type="password" fluid />
             </FloatLabel>
             <ErrorMessage name="password" text="$p-form-field-invalid-placeholder-color" />
           </Field>
           <Field v-slot="{ field }" name="confirmPassword">
             <FloatLabel variant="on">
+              <Password v-bind="field" required toggle-mask fluid :feedback="false" />
               <label>{{ $t('pages.auth.fields.confirmPassword.label') }}</label>
-              <InputText v-bind="field" required type="confirmPassword" fluid />
             </FloatLabel>
             <ErrorMessage name="confirmPassword" text="$p-form-field-invalid-placeholder-color" />
           </Field>
           <Field v-slot="{ field }" name="email">
             <FloatLabel variant="on">
+              <InputText v-bind="field" required type="email" fluid autocomplete="off" />
               <label>{{ $t('pages.auth.fields.email.label') }}</label>
-              <InputText v-bind="field" required type="email" fluid />
             </FloatLabel>
             <ErrorMessage name="email" text="$p-form-field-invalid-placeholder-color" />
           </Field>
