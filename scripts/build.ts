@@ -1,7 +1,19 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import nuxtConfig from '../nuxt.config';
 
-const fromPath = path.resolve(process.cwd(), './.output/server/node_modules/.prisma');
+const preset = process.env.NITRO_PRESET || nuxtConfig.nitro?.preset || 'node-server';
 
-fs.renameSync(fromPath, path.resolve(fromPath, '../../.prisma'));
+let baseUrl = './.output/server';
+
+if (preset === 'vercel') {
+  baseUrl = './.vercel/output/functions/__nitro.func';
+}
+else if (preset === 'netlify') {
+  baseUrl = './.netlify/functions-internal/server';
+}
+
+const fromPath = path.resolve(process.cwd(), baseUrl, './node_modules/.prisma');
+
+fs.renameSync(fromPath, path.resolve(baseUrl, './.prisma'));

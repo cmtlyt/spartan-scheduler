@@ -1,3 +1,4 @@
+import { defineNuxtConfig } from 'nuxt/config';
 import preset from './themes/preset';
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
