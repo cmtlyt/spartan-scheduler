@@ -112,7 +112,7 @@ onMounted(() => {
             </FloatLabel>
             <ErrorMessage name="password" text="$p-form-field-invalid-placeholder-color" />
           </Field>
-          <Button type="submit" severity="secondary" label="Submit">
+          <Button type="submit" label="Submit">
             {{ $t('pages.auth.login.submit') }}
           </Button>
         </Form>
@@ -160,7 +160,7 @@ onMounted(() => {
             </FloatLabel>
             <ErrorMessage name="email" text="$p-form-field-invalid-placeholder-color" />
           </Field>
-          <Button type="submit" severity="secondary" label="Submit">
+          <Button type="submit" label="Submit">
             {{ $t('pages.auth.register.submit') }}
           </Button>
         </Form>

@@ -13,6 +13,7 @@ useHeadSafe({
     <NuxtPage />
   </NuxtLayout>
   <Toast />
+  <DynamicDialog />
 </template>
 
 <style>

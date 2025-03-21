@@ -1,28 +1,7 @@
 <script setup lang="ts">
 import type { DataTableFilterEvent, DataTableFilterMeta, DataTableFilterMetaData, DataTablePageEvent } from 'primevue';
-import { clipboard, gc } from '@cmtlyt/base';
-
-interface Task {
-  id: number;
-  name: string;
-  content: string;
-  createdDate: string;
-  creator: string;
-  creatorAvatar: string;
-  assignee: string;
-  assigneeAvatar: string;
-  status: string;
-  priority: string;
-  project: string;
-  participants?: string[];
-  updater: string;
-  updatedDate: string;
-}
-
-interface Option {
-  label: string;
-  value: string;
-}
+import type { Task } from '~/types/task';
+import { priorityOptions, statusOptions } from '~/constant/task';
 
 interface SearchInfo {
   first: number;
@@ -36,7 +15,7 @@ definePageMeta({
   i18nTitle: 'aside.rwlb',
 });
 
-const toast = useClToast();
+const dialog = useDialog();
 
 const tasks = ref<Task[]>([]);
 const lockedTasks = ref<Task[]>([]);
@@ -47,18 +26,6 @@ const searchInfo = reactive<SearchInfo>({
   totalRecords: 100,
   filters: { },
 });
-
-const statusOptions = ref<Option[]>([
-  { label: '进行中', value: '进行中' },
-  { label: '待开始', value: '待开始' },
-  { label: '已完成', value: '已完成' },
-]);
-
-const priorityOptions = ref<Option[]>([
-  { label: '高', value: '高' },
-  { label: '中', value: '中' },
-  { label: '低', value: '低' },
-]);
 
 const drawerVisible = ref(false);
 const selectedTask = ref<Task | null>(null);
@@ -72,15 +39,6 @@ function updateData(event: DataTablePageEvent | DataTableFilterEvent) {
   searchInfo.rows = event.rows;
   searchInfo.first = event.first;
   fetchTasks();
-}
-
-// 添加复制方法
-function copyId(id: number) {
-  if (!clipboard.isClearable) {
-    return toast.error({ summary: '复制失败', detail: '剪贴板不可用' });
-  }
-  clipboard.copy(String(id));
-  toast.success({ summary: '复制成功', detail: `任务ID ${id} 已复制` });
 }
 
 function toggleLock(data: Task, frozen: boolean, index: number) {
@@ -138,6 +96,25 @@ function initFilterInfo() {
 
 initFilterInfo();
 
+function openCreateTaskDialog() {
+  dialog.open(defineAsyncComponent(() => import('~/components/task/info-form.vue')), {
+    props: {
+      header: '创建任务',
+      modal: true,
+      draggable: true,
+    },
+    emits: {
+      onSubmit(data: any) {
+        logger.debug(data);
+      },
+    },
+  });
+}
+
+function updateTaskInfo(value: string, field: string, data: Task) {
+  logger.debug(field, value, data);
+}
+
 onMounted(() => {
   fetchTasks();
 });
@@ -163,15 +140,18 @@ onMounted(() => {
       @filter="updateData"
     >
       <template #header>
-        <div class="flex justify-between">
+        <section class="flex justify-between">
           <ClIconBtn name="material-symbols:filter-alt-off-outline" @click="clearFilter" />
-          <IconField un-w="150rem" un-h="30rem">
-            <InputIcon style="--p-icon-size: 20rem">
-              <Icon name="material-symbols:search-rounded" un-size="20rem" />
-            </InputIcon>
-            <InputText v-model="(searchInfo.filters.id as any).value" un-size="full" @change="fetchTasks" />
-          </IconField>
-        </div>
+          <section un-flex gap="8rem">
+            <IconField un-w="150rem" un-h="30rem">
+              <InputIcon style="--p-icon-size: 20rem">
+                <Icon name="material-symbols:search-rounded" un-size="20rem" />
+              </InputIcon>
+              <InputText v-model="(searchInfo.filters.id as any).value" un-size="full" placeholder="Search by id" @change="fetchTasks" />
+            </IconField>
+            <ClIconBtn name="material-symbols:add-diamond-rounded" @click="openCreateTaskDialog" />
+          </section>
+        </section>
       </template>
       <Column header="任务名称" filter-field="name" :show-filter-match-modes="false">
         <template #filter="{ filterModel }">
@@ -188,7 +168,13 @@ onMounted(() => {
           <Select v-model="filterModel.value" :options="statusOptions" option-label="label" option-value="value" placeholder="Select a status" />
         </template>
         <template #body="slotProps">
-          <Select v-model="slotProps.data.status" :options="statusOptions" option-label="label" option-value="value" />
+          <Select
+            :model-value="slotProps.data.status"
+            :options="statusOptions"
+            option-label="label"
+            option-value="value"
+            @change="updateTaskInfo($event.value, 'status', slotProps.data)"
+          />
         </template>
       </Column>
       <Column header="优先级" class="w-150rem" filter-field="priority" :show-filter-match-modes="false">
@@ -196,7 +182,13 @@ onMounted(() => {
           <Select v-model="filterModel.value" :options="priorityOptions" option-label="label" option-value="value" placeholder="Select a priority" />
         </template>
         <template #body="slotProps">
-          <Select v-model="slotProps.data.priority" :options="priorityOptions" option-label="label" option-value="value" />
+          <Select
+            :model-value="slotProps.data.priority"
+            :options="priorityOptions"
+            option-label="label"
+            option-value="value"
+            @change="updateTaskInfo($event.value, 'priority', slotProps.data)"
+          />
         </template>
       </Column>
       <Column header="创建人" class="w-150rem" filter-field="creator" :show-filter-match-modes="false">
@@ -231,6 +223,7 @@ onMounted(() => {
         </template>
       </Column>
     </DataTable>
+    <TaskDetailDrawer v-model:visible="drawerVisible" :task-info="selectedTask" />
 
     <Drawer
       v-model:visible="drawerVisible"
@@ -238,73 +231,10 @@ onMounted(() => {
       un-w="1200rem!"
       :header="selectedTask?.name" :modal="true" position="right"
     >
-      <section v-if="selectedTask" un-h="full" un-flex>
-        <section class="content-container" un-mb="4rem" un-flex="~ 1 col" un-overflow="x-hidden y-auto">
-          <Editor v-model="selectedTask.content" class="task-detail-editor" un-flex="~ 1 col">
-            <template #toolbar>
-              <section un-flex un-items="center" un-h="2.5em">
-                详情
-              </section>
-              <section>
-                <span>{{ selectedTask.creator }}</span>
-                <span>创建于</span>
-                <span>{{ selectedTask.createdDate }}</span>
-                <span>,</span>
-                <span>{{ selectedTask.updater }}</span>
-                <span>更新于</span>
-                <span>{{ selectedTask.updatedDate }}</span>
-              </section>
-            </template>
-          </Editor>
-          <section un-bg="red">
-            command
-          </section>
-        </section>
-
-        <section
-          :class="gc(
-            'other-info-container',
-            ['[&>section]:grid', '[&>section]:grid-cols-[6em_1fr]', '[&>section]:h-40rem', '[&>section]:items-center'],
-          )"
-          un-flex="~ col"
-          un-gap="10rem"
-          un-box-border
-          un-w="350rem"
-          un-pl="1em"
-        >
-          <section>
-            <strong>ID:</strong>
-            <section>
-              <span>{{ selectedTask.id }}</span>
-              <span un-ml="1em" un-text="$p-primary-color" @click="copyId(selectedTask.id)">复制</span>
-            </section>
-          </section>
-          <section>
-            <strong>状态:</strong>
-            <Select v-model="selectedTask.status" :options="statusOptions" option-label="label" option-value="value" />
-          </section>
-          <section>
-            <strong>接手人:</strong>
-            <span>{{ selectedTask.assignee }}</span>
-          </section>
-          <section>
-            <strong>优先级:</strong>
-            <Select v-model="selectedTask.priority" :options="priorityOptions" option-label="label" option-value="value" />
-          </section>
-          <section>
-            <strong>所属项目:</strong>
-            <span>{{ selectedTask.project }}</span>
-          </section>
-          <section>
-            <strong>参与者:</strong>
-            <section un-flex="~ wrap" un-gap="2rem" un-mt="2rem">
-              <Tag v-for="(participant, index) in selectedTask.participants" :key="index">
-                {{ participant }}
-              </Tag>
-            </section>
-          </section>
-        </section>
-      </section>
+      <TaskDetailPanel
+        :task-info="selectedTask"
+        @change="({ value, field, data }) => updateTaskInfo(value, field, data)"
+      />
     </Drawer>
   </section>
 </template>
@@ -324,41 +254,13 @@ onMounted(() => {
   border-left: var(--p-primary-200) 1rem solid;
 }
 
-:global(.task-detail-drawer .p-drawer-header) {
-  border-bottom: var(--p-primary-200) 1rem solid;
-}
-
 .content-container::-webkit-scrollbar {
   display: none;
   width: 0;
   height: 0;
 }
 
-.task-detail-editor:deep() {
-  .p-editor-toolbar,
-  .ql-editor {
-    padding: 0;
-    border-radius: 0;
-  }
-
-  .ql-editor {
-    padding-top: 10rem;
-  }
-
-  .p-editor-content,
-  .p-editor-toolbar {
-    border: none !important;
-  }
-
-  .p-editor-content {
-    flex: 1;
-  }
-
-  .p-editor-toolbar {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 0 10rem -6rem var(--p-primary-color);
-  }
+:global(.task-detail-drawer .p-drawer-header) {
+  border-bottom: var(--p-primary-200) 1rem solid;
 }
 </style>
