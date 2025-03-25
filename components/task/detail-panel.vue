@@ -20,7 +20,7 @@ const currentContent = ref(props.taskInfo?.content || '');
 // 添加复制方法
 function copyId(id: number) {
   if (!clipboard.isClearable) {
-    return toast.error({ summary: t('compoennt.taskDetailPanel.copy.error.title'), detail: t('component.taskDetailPanel.copy.error.content') });
+    return toast.error({ summary: t('component.taskDetailPanel.copy.error.title'), detail: t('component.taskDetailPanel.copy.error.content') });
   }
   clipboard.copy(String(id));
   toast.success({ summary: t('component.taskDetailPanel.copy.success.title'), detail: t('component.taskDetailPanel.copy.success.content', { id }) });

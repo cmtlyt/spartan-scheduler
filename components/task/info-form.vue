@@ -30,7 +30,7 @@ const taskInfoSchema = yup.object({
   content: yup.string().required(requiredTip(t('module.task.content'))),
   priority: yup.string().required(requiredTip(t('module.task.priority'))),
   assigneeId: yup.string().required(requiredTip(t('module.task.assignee'))),
-  projectId: yup.string().required(requiredTip(t('module.task.group'))),
+  projectId: yup.string().required(requiredTip(t('module.task.projectGroup'))),
 });
 
 function onFormSubmit(values: any) {
@@ -50,7 +50,7 @@ function onFormSubmit(values: any) {
         <Field v-slot="{ field }" name="projectId">
           <IftaLabel>
             <InputText v-bind="field" type="text" fluid autocomplete="off" />
-            <label>{{ $t('module.task.group') }}</label>
+            <label>{{ $t('module.task.projectGroup') }}</label>
           </IftaLabel>
           <ErrorMessage name="projectId" text="$p-form-field-invalid-placeholder-color" />
         </Field>
