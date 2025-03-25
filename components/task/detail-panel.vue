@@ -12,6 +12,7 @@ const emit = defineEmits<{
 }>();
 
 const toast = useClToast();
+const { t } = useI18n();
 
 const readonly = ref(true);
 const currentContent = ref(props.taskInfo?.content || '');
@@ -19,10 +20,10 @@ const currentContent = ref(props.taskInfo?.content || '');
 // 添加复制方法
 function copyId(id: number) {
   if (!clipboard.isClearable) {
-    return toast.error({ summary: '复制失败', detail: '剪贴板不可用' });
+    return toast.error({ summary: t('compoennt.taskDetailPanel.copy.error.title'), detail: t('component.taskDetailPanel.copy.error.content') });
   }
   clipboard.copy(String(id));
-  toast.success({ summary: '复制成功', detail: `任务ID ${id} 已复制` });
+  toast.success({ summary: t('component.taskDetailPanel.copy.success.title'), detail: t('component.taskDetailPanel.copy.success.content', { id }) });
 }
 
 function changeHandler(value: any, field: string, data: Task) {
@@ -43,17 +44,16 @@ function toggleReadonly() {
       <Editor v-model="currentContent" :readonly class="task-detail-editor" un-flex="~ 1 col">
         <template #toolbar>
           <section un-flex un-items="center" un-h="2.5em">
-            详情
+            {{ $t('component.taskDetailPanel.descTitle') }}
           </section>
           <section un-flex un-justify="between" un-p="y-8rem">
             <section>
-              <span>{{ taskInfo.creator }}</span>
-              <span>创建于</span>
-              <span>{{ taskInfo.createdDate }}</span>
-              <span>,</span>
-              <span>{{ taskInfo.updater }}</span>
-              <span>更新于</span>
-              <span>{{ taskInfo.updatedDate }}</span>
+              {{ $t('component.taskDetailPanel.editInfo', {
+                creator: taskInfo.creator,
+                createdDate: taskInfo.createdDate,
+                updater: taskInfo.updater,
+                updatedDate: taskInfo.updatedDate,
+              }) }}
             </section>
             <ClIconBtn
               :name="readonly as boolean ? 'material-symbols:edit-square-outline' : 'material-symbols:check'"
@@ -82,14 +82,14 @@ function toggleReadonly() {
       un-pl="1em"
     >
       <section>
-        <strong>ID:</strong>
+        <strong>{{ $t('module.task.id') }}:</strong>
         <section>
           <span>{{ taskInfo.id }}</span>
-          <span un-ml="1em" un-text="$p-primary-color" @click="copyId(taskInfo.id)">复制</span>
+          <span un-ml="1em" un-text="$p-primary-color" @click="copyId(taskInfo.id)">{{ $t('component.taskDetailPanel.copyId') }}</span>
         </section>
       </section>
       <section>
-        <strong>状态:</strong>
+        <strong>{{ $t('module.task.status') }}:</strong>
         <Select
           :model-value="taskInfo!.status"
           :options="statusOptions"
@@ -99,11 +99,11 @@ function toggleReadonly() {
         />
       </section>
       <section>
-        <strong>接手人:</strong>
+        <strong>{{ $t('module.task.assignee') }}:</strong>
         <span>{{ taskInfo.assignee }}</span>
       </section>
       <section>
-        <strong>优先级:</strong>
+        <strong>{{ $t('module.task.priority') }}:</strong>
         <Select
           :model-value="taskInfo!.priority"
           :options="priorityOptions"
@@ -113,11 +113,11 @@ function toggleReadonly() {
         />
       </section>
       <section>
-        <strong>所属项目:</strong>
+        <strong>{{ $t('module.task.projectGroup') }}:</strong>
         <span>{{ taskInfo.project }}</span>
       </section>
       <section>
-        <strong>参与者:</strong>
+        <strong>{{ $t('module.task.participants') }}:</strong>
         <section un-flex="~ wrap" un-gap="2rem" un-mt="2rem">
           <Tag v-for="(participant, index) in taskInfo.participants" :key="index">
             {{ participant }}

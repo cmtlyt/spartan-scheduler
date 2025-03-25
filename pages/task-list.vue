@@ -16,6 +16,7 @@ definePageMeta({
 });
 
 const dialog = useDialog();
+const { t } = useI18n();
 
 const tasks = ref<Task[]>([]);
 const lockedTasks = ref<Task[]>([]);
@@ -99,7 +100,7 @@ initFilterInfo();
 function openCreateTaskDialog() {
   dialog.open(defineAsyncComponent(() => import('~/components/task/info-form.vue')), {
     props: {
-      header: '创建任务',
+      header: t('component.taskInfoForm.title'),
       modal: true,
       draggable: true,
     },
@@ -153,7 +154,7 @@ onMounted(() => {
           </section>
         </section>
       </template>
-      <Column header="任务名称" filter-field="name" :show-filter-match-modes="false">
+      <Column :header="$t('component.taskInfoForm.headerLabel.name')" filter-field="name" :show-filter-match-modes="false">
         <template #filter="{ filterModel }">
           <InputText v-model="filterModel.value" class="p-column-filter" placeholder="Search by name" />
         </template>
@@ -163,7 +164,7 @@ onMounted(() => {
           </section>
         </template>
       </Column>
-      <Column header="任务状态" class="w-150rem" filter-field="status" :show-filter-match-modes="false">
+      <Column :header="$t('component.taskInfoForm.headerLabel.status')" class="w-150rem" filter-field="status" :show-filter-match-modes="false">
         <template #filter="{ filterModel }">
           <Select v-model="filterModel.value" :options="statusOptions" option-label="label" option-value="value" placeholder="Select a status" />
         </template>
@@ -177,7 +178,7 @@ onMounted(() => {
           />
         </template>
       </Column>
-      <Column header="优先级" class="w-150rem" filter-field="priority" :show-filter-match-modes="false">
+      <Column :header="$t('component.taskInfoForm.headerLabel.priority')" class="w-150rem" filter-field="priority" :show-filter-match-modes="false">
         <template #filter="{ filterModel }">
           <Select v-model="filterModel.value" :options="priorityOptions" option-label="label" option-value="value" placeholder="Select a priority" />
         </template>
@@ -191,7 +192,7 @@ onMounted(() => {
           />
         </template>
       </Column>
-      <Column header="创建人" class="w-150rem" filter-field="creator" :show-filter-match-modes="false">
+      <Column :header="$t('component.taskInfoForm.headerLabel.creator')" class="w-150rem" filter-field="creator" :show-filter-match-modes="false">
         <template #filter="{ filterModel }">
           <InputText v-model="filterModel.value" class="p-column-filter" placeholder="Search by creator" />
         </template>
@@ -202,7 +203,7 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <Column header="接手人" class="w-150rem" filter-field="assignee" :show-filter-match-modes="false">
+      <Column :header="$t('component.taskInfoForm.headerLabel.assignee')" class="w-150rem" filter-field="assignee" :show-filter-match-modes="false">
         <template #filter="{ filterModel }">
           <InputText v-model="filterModel.value" class="p-column-filter" placeholder="Search by assignee" />
         </template>
@@ -213,7 +214,7 @@ onMounted(() => {
           </div>
         </template>
       </Column>
-      <Column field="project" header="所属项目" class="w-200rem" />
+      <Column field="project" :header="$t('component.taskInfoForm.headerLabel.projectGroup')" class="w-200rem" />
       <Column class="w-60rem">
         <template #body="{ data, frozenRow, index }">
           <section @click="toggleLock(data, frozenRow, index)">
@@ -223,7 +224,6 @@ onMounted(() => {
         </template>
       </Column>
     </DataTable>
-    <TaskDetailDrawer v-model:visible="drawerVisible" :task-info="selectedTask" />
 
     <Drawer
       v-model:visible="drawerVisible"
